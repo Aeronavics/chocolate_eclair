@@ -1,11 +1,14 @@
 import psycopg2
+import docker
 
 def connect():
+    client = docker.from_env()
+    container = client.containers.get("db")
     try:
         connection = psycopg2.connect(user = "postgres",
             password = "postgres",
             host = "127.0.0.1",
-            port = "32771",
+            port = container.ports['5432/tcp'][0]['HostPort'],
             database = "webodm_dev")
         return  connection.cursor()
     except (Exception, psycopg2.Error) as error:
