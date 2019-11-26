@@ -13,13 +13,19 @@ def login(username, password):
     res = requests.post('http://' + serverIp +'/api/token-auth/', data={'username': username, 'password': password}).json()
     return res['token']
 
-def uploadImages(email, password, images, projectId=None):
-    if not projectId:
+def uploadImages(email, password, images, projectId=None, projectName=None):
+    if not projectId and not projectName:
         projectId =  db.getLatestProjectFromEmail(email)
     else:
-        projectIdList = db.getAllProjectsFromEmail(email)
-        if (projectId not in projectIdList):
-            projectId = db.getLatestProjectFromEmail(email)
+        pid = None
+        if projectName:
+            pid = db.getLastestProjectIdfromProjectName(projectName, email)
+        if pid:
+            projectId = pid
+        else:
+            projectIdList = db.getAllProjectsFromEmail(email)
+            if (projectId not in projectIdList):
+                projectId = db.getLatestProjectFromEmail(email)
     if not projectId:
         projectId = createNewProject(email,password)
 
