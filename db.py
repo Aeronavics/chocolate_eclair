@@ -20,7 +20,7 @@ def getLatestProjectFromEmail(email):
     cursor = connect()
     if (cursor):
         try:
-            cursor.execute("select t.id from (select distinct app_project.id, app_project.created_at, row_number() over(order by app_project.created_at desc) as rn from app_projectuserobjectpermission join auth_user on app_projectuserobjectpermission.user_id=auth_user.id join app_project on app_project.id=app_projectuserobjectpermission.content_object_id where auth_user.email='" + email + "')t where t.rn =1;")
+            cursor.execute("select t.id from (select distinct app_project.id, app_project.created_at, row_number() over(order by app_project.created_at desc) as rn from app_project join auth_user on app_project.owner_id=auth_user.id where auth_user.email='" + email + "')t where t.rn =1;")
             record = cursor.fetchone()
             if (not record):
                 print("No projects found")
@@ -97,7 +97,7 @@ def getEmailFromTask(taskId):
     cursor = connect()
     if cursor:
         try:
-            cursor.execute("select distinct email from auth_user join app_projectuserobjectpermission on auth_user.id=app_projectuserobjectpermission.user_id join app_task on app_projectuserobjectpermission.content_object_id=app_task.project_id where app_task.id='"+taskId+"'")
+            cursor.execute("select distinct email from auth_user join app_project on auth_user.id=app_project.owner_id join app_task on app_project.id=app_task.project_id where app_task.id='"+taskId+"'")
             record = cursor.fetchone()
             if not record:
                 return
@@ -111,7 +111,7 @@ def getAllProjectsFromEmail(email):
     cursor = connect()
     if cursor:
         try:
-            cursor.execute("select distinct app_projectuserobjectpermission.content_object_id from app_projectuserobjectpermission join auth_user on app_projectuserobjectpermission.user_id=auth_user.id where auth_user.email='"+ email +"'")
+            cursor.execute("select distinct app_project.id from app_project join auth_user on app_project.owner_id=auth_user.id where auth_user.email='"+ email +"'")
             record = cursor.fetchall()
             if not record:
                 return []
@@ -124,5 +124,15 @@ def getAllProjectsFromEmail(email):
             print("Error: ", error)
             return []
 
-
-
+def getLatestProjectIdFromProjectName(projectName, email):
+    cursor = connect()
+    if cursor:
+        try:
+            cursor.execute("select t.id from (select app_project.id, app_project.created_at, row_number() over(order by app_project.created_at desc) from app_project join auth_user on app_project.owner_id=auth_user.id where app_project.name='" + projectName + "' and auth_user.email='" + email + "')t where t.row_number=1")
+            record = cursor.fetchone()
+            if not record:
+                return
+            else:
+                return record[0]
+        except (Exception, psycopg2.Error) as error:
+            print("Error: ", error)
