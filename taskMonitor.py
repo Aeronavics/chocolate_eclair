@@ -14,16 +14,12 @@ def checkStatus():
                     status = db.getTaskStatus(taskId)
                     if (status == 40):
                         projectId = db.getProjectFromTask(taskId)
-                        print("Task " + taskId + " has completed")
                         email = db.getEmailFromTask(taskId)
                         if email:
-                            print("test")
-                            #notifyEmail.complete(email)
+                            notifyEmail.complete(email)
                     elif(status == 30):
                         projectId = db.getProjectFromTask(taskId)
-                        print("Task " + taskId + " has failed")
                         email = db.getEmailFromTask(taskId)
                         if email:
-                            print(email)
-                            #notifyEmail.failure(email)
+                            notifyEmail.failure(email)
         taskDict = taskDict2

@@ -12,11 +12,11 @@ def connect():
             database = "webodm_dev")
         return  connection.cursor()
     except (Exception, psycopg2.Error) as error:
-        print ("Error while connecting to PostgreSQL: " + error)
+        print ("Error while connecting to PostgreSQL: ", error)
         return
 
 
-def getProjectFromEmail(email):
+def getLatestProjectFromEmail(email):
     cursor = connect()
     if (cursor):
         try:
@@ -28,7 +28,7 @@ def getProjectFromEmail(email):
             else:
                 return record[0]
         except (Exception, psycopg2.Error) as error:
-            print("Error: " + error)
+            print("Error: ", error)
 
 def getUsernameFromEmail(email):
     cursor = connect()
@@ -42,7 +42,7 @@ def getUsernameFromEmail(email):
             else:
                 return record[0]
         except (Exception, psycopg2.Error) as error:
-            print("Error: " + error)
+            print("Error: ", error)
             return
 
 
@@ -58,7 +58,7 @@ def getTaskStatus(taskID):
             else:
                 return record[0]
         except (Exception, psycopg2.Error) as error:
-            print("Error: " + error)
+            print("Error: ", error)
             return
 
 def getProjectFromTask(taskId):
@@ -73,7 +73,7 @@ def getProjectFromTask(taskId):
             else:
                 return record[0]
         except (Exception, psycopg2.Error) as error:
-            print("Error: " + error)
+            print("Error: ", error)
             return
 
 def getAllRunningTasks():
@@ -90,7 +90,7 @@ def getAllRunningTasks():
                     taskList.append(item[0])
                 return taskList
         except (Exception, psycopg2.Error) as error:
-            print("Error: " + error)
+            print("Error: ", error)
             return []
 
 def getEmailFromTask(taskId):
@@ -104,5 +104,25 @@ def getEmailFromTask(taskId):
             else:
                 return record[0]
         except (Exception,psycopg2.Error) as error:
-            print("Error: " + error)
+            print("Error: ", error)
             return
+
+def getAllProjectsFromEmail(email):
+    cursor = connect()
+    if cursor:
+        try:
+            cursor.execute("select distinct app_projectuserobjectpermission.content_object_id from app_projectuserobjectpermission join auth_user on app_projectuserobjectpermission.user_id=auth_user.id where auth_user.email='"+ email +"'")
+            record = cursor.fetchall()
+            if not record:
+                return []
+            else:
+                projectList = []
+                for item in record:
+                    projectList.append(item[0])
+                return projectList
+        except (Exception, psycopg2.Error) as error:
+            print("Error: ", error)
+            return []
+
+
+

@@ -2,10 +2,10 @@ import smtplib, ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-sender_email = "james.morritt@aeronavics.com"
+sender_email = "Senders email goes here"
 password = "Password goes here"
 
-def completion(receiver_email):
+def complete(receiver_email):
     message = MIMEMultipart("alternative")
     message["Subject"] = "Image stitching complete"
     message["From"] = sender_email
