@@ -13,19 +13,22 @@ def login(username, password):
     res = requests.post('http://' + serverIp +'/api/token-auth/', data={'username': username, 'password': password}).json()
     return res['token']
 
-def uploadImages(email, password, images, projectId=None, projectName=None):
-    if not projectId and not projectName:
+def createTask(email, password, images, projectName=None):
+    if not projectName:
+        uploadImages(email, password, images)
+    else:
+        projectId = db.getLatestProjectIdFromProjectName(projectName, email)
+        if not projectId:
+            projectId = createNewProject(email, password, projectName)
+        uploadImages(email, password, images, projectId)
+
+def uploadImages(email, password, images, projectId=None):
+    if not projectId:
         projectId =  db.getLatestProjectFromEmail(email)
     else:
-        pid = None
-        if projectName:
-            pid = db.getLastestProjectIdfromProjectName(projectName, email)
-        if pid:
-            projectId = pid
-        else:
-            projectIdList = db.getAllProjectsFromEmail(email)
-            if (projectId not in projectIdList):
-                projectId = db.getLatestProjectFromEmail(email)
+        projectIdList = db.getAllProjectsFromEmail(email)
+        if (projectId not in projectIdList):
+            projectId = db.getLatestProjectFromEmail(email)
     if not projectId:
         projectId = createNewProject(email,password)
 
@@ -35,10 +38,12 @@ def uploadImages(email, password, images, projectId=None, projectName=None):
             files = images,
             data={'name':datetime.now().strftime("%d/%m/%Y, %H:%M:%S")}).json()
 
-def createNewProject(email, password):
+def createNewProject(email, password, projectName=None):
     username = db.getUsernameFromEmail(email)
     token = login(username, password)
+    if not projectName:
+        projectName = datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
     res = requests.post('http://{}/api/projects/'.format(serverIp),
             headers={'Authorization':'JWT {}'.format(token)},
-            data={'name':'Project created: {}'.format(datetime.now().strftime("%d/%m/%Y, %H:%M:%S"))}).json()
+            data={'name':'Project created: {}'.format(projectName)}).json()
     return res['id']
