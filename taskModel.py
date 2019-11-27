@@ -1,12 +1,12 @@
 import itertools
 import httpWebODM
 import os
+import exifEditor
 
 class TaskModel:
-    newid = itertools.count()
 
     def __init__(self, email, password, projectName=None):
-        self.id = next(TaskModel.newid)
+        self.id = id(self)
         self.email = email
         self.password = password
         self.images = "./uploads/{}/".format(self.id)
@@ -16,6 +16,7 @@ class TaskModel:
 
 
     def uploadTask(self):
+        exifEditor.validate(self.images)
         tid = httpWebODM.createTask(self.email, self.password, self.images, self.projectName)
         return tid
 

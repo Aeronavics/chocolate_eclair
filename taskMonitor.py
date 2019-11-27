@@ -23,3 +23,5 @@ def checkStatus():
                         if email:
                             notifyEmail.failure(email)
         taskDict = taskDict2
+
+checkStatus()
