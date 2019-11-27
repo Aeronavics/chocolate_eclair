@@ -11,6 +11,8 @@ class TaskModel:
         self.password = password
         self.images = "./uploads/{}/".format(self.id)
         self.projectName = projectName
+        if not os.path.exists("./uploads/"):
+            os.mkdir("./uploads/")
         if not os.path.exists(self.images):
             os.mkdir(self.images)
 

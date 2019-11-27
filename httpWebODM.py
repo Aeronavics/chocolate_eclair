@@ -36,7 +36,6 @@ def uploadImages(email, password, imageDir, projectId=None):
 
     token = login(adminUsername, adminPassword)
     taskName = datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
-    print(token)
 
     images = []
     for root, dirs, files in os.walk(imageDir):
