@@ -2,6 +2,8 @@ import requests
 import json
 import db
 from datetime import datetime
+import time
+import os
 
 serverIp = "127.0.0.1:8000"
 adminUsername = "ServerUser"
@@ -13,16 +15,16 @@ def login(username, password):
     res = requests.post('http://' + serverIp +'/api/token-auth/', data={'username': username, 'password': password}).json()
     return res['token']
 
-def createTask(email, password, images, projectName=None):
+def createTask(email, password, imageDir, projectName=None):
     if not projectName:
-        uploadImages(email, password, images)
+        return uploadImages(email, password, imagesDir)
     else:
         projectId = db.getLatestProjectIdFromProjectName(projectName, email)
         if not projectId:
             projectId = createNewProject(email, password, projectName)
-        uploadImages(email, password, images, projectId)
+        return uploadImages(email, password, imageDir, projectId)
 
-def uploadImages(email, password, images, projectId=None):
+def uploadImages(email, password, imageDir, projectId=None):
     if not projectId:
         projectId =  db.getLatestProjectFromEmail(email)
     else:
@@ -33,17 +35,25 @@ def uploadImages(email, password, images, projectId=None):
         projectId = createNewProject(email,password)
 
     token = login(adminUsername, adminPassword)
-    res = requests.post('http://{}/api/projects/{}/tasks/'.format(serverIp,projectId),
-            headers={'Authorization':'JWT {}'.format(token)},
-            files = images,
-            data={'name':datetime.now().strftime("%d/%m/%Y, %H:%M:%S")}).json()
+    taskName = datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
+    print(token)
+
+    images = []
+    for root, dirs, files in os.walk(imageDir):
+        for f in files:
+            images.append(('images', (f, open(imageDir + '/' + f, 'rb'), 'image/jpg')))
+    
+
+
+    res = requests.post('http://{}/api/projects/{}/tasks/'.format(serverIp,projectId), headers={'Authorization':'JWT {}'.format(token)}, files = images, data={'name': taskName})
+    return res.json().get('id')
 
 def createNewProject(email, password, projectName=None):
     username = db.getUsernameFromEmail(email)
     token = login(username, password)
     if not projectName:
-        projectName = datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
+        projectName ="Project created: " + datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
     res = requests.post('http://{}/api/projects/'.format(serverIp),
             headers={'Authorization':'JWT {}'.format(token)},
-            data={'name':'Project created: {}'.format(projectName)}).json()
+            data={'name':'{}'.format(projectName)}).json()
     return res['id']
