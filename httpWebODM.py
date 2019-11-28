@@ -43,9 +43,9 @@ def uploadImages(email, password, imageDir, options, projectId=None):
             images.append(('images', (f, open(imageDir + '/' + f, 'rb'), 'image/jpg')))
     
     if not options:
-        requestData = {'name': taskname}
+        requestData = {'name': taskName}
     else:
-        requestData = {'name': taskname, 'options': options}
+        requestData = {'name': taskName, 'options': options}
 
     res = requests.post('http://{}/api/projects/{}/tasks/'.format(serverIp,projectId), headers={'Authorization':'JWT {}'.format(token)}, files = images, data = requestData)
     return res.json().get('id')
