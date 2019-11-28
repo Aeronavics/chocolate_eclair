@@ -24,7 +24,7 @@ def createTask(email, password, imageDir, projectName=None, options=None):
             projectId = createNewProject(email, password, projectName)
         return uploadImages(email, password, imageDir, options, projectId)
 
-def uploadImages(email, password, imageDir, options, projectId=None)
+def uploadImages(email, password, imageDir, options, projectId=None):
     if not projectId:
         projectId =  db.getLatestProjectFromEmail(email)
     else:
