@@ -2,7 +2,7 @@ import smtplib, ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-sender_email = "jamesmorritttest@gamil.com"
+sender_email = "jamesmorritttest@gmail.com"
 password = "T3sttest"
 
 def complete(receiver_email):
