@@ -15,16 +15,16 @@ def login(username, password):
     res = requests.post('http://' + serverIp +'/api/token-auth/', data={'username': username, 'password': password}).json()
     return res['token']
 
-def createTask(email, password, imageDir, projectName=None, options=None):
+def createTask(email, password, imageDir, projectName, taskName, options):
     if not projectName:
-        return uploadImages(email, password, imagesDir, options)
+        return uploadImages(email, password, imagesDir, taskName, options)
     else:
         projectId = db.getLatestProjectIdFromProjectName(projectName, email)
         if not projectId:
             projectId = createNewProject(email, password, projectName)
-        return uploadImages(email, password, imageDir, options, projectId)
+        return uploadImages(email, password, imageDir, taskName, options, projectId)
 
-def uploadImages(email, password, imageDir, options, projectId=None):
+def uploadImages(email, password, imageDir, taskName, options, projectId=None):
     if not projectId:
         projectId =  db.getLatestProjectFromEmail(email)
     else:
@@ -35,7 +35,8 @@ def uploadImages(email, password, imageDir, options, projectId=None):
         projectId = createNewProject(email,password)
 
     token = login(adminUsername, adminPassword)
-    taskName = datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
+    if not taskName:
+        taskName = datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
 
     images = []
     for root, dirs, files in os.walk(imageDir):

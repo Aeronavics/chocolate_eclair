@@ -5,12 +5,13 @@ import exifEditor
 
 class TaskModel:
 
-    def __init__(self, email, password, projectName=None, options=None):
+    def __init__(self, email, password, projectName, taskName, options):
         self.id = id(self)
         self.email = email
         self.password = password
         self.images = "./uploads/{}/".format(self.id)
         self.projectName = projectName
+        self.taskName = taskName
         self.options = options
         if not os.path.exists("./uploads/"):
             os.mkdir("./uploads/")
@@ -20,7 +21,7 @@ class TaskModel:
 
     def uploadTask(self):
         exifEditor.validate(self.images)
-        tid = httpWebODM.createTask(self.email, self.password, self.images, self.projectName, self.options)
+        tid = httpWebODM.createTask(self.email, self.password, self.images, self.projectName, self.taskName, self.options)
         return tid
 
 
