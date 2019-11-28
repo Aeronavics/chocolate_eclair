@@ -15,16 +15,16 @@ def login(username, password):
     res = requests.post('http://' + serverIp +'/api/token-auth/', data={'username': username, 'password': password}).json()
     return res['token']
 
-def createTask(email, password, imageDir, projectName=None):
+def createTask(email, password, imageDir, projectName=None, options=None):
     if not projectName:
-        return uploadImages(email, password, imagesDir)
+        return uploadImages(email, password, imagesDir, options)
     else:
         projectId = db.getLatestProjectIdFromProjectName(projectName, email)
         if not projectId:
             projectId = createNewProject(email, password, projectName)
-        return uploadImages(email, password, imageDir, projectId)
+        return uploadImages(email, password, imageDir, options, projectId)
 
-def uploadImages(email, password, imageDir, projectId=None):
+def uploadImages(email, password, imageDir, options, projectId=None)
     if not projectId:
         projectId =  db.getLatestProjectFromEmail(email)
     else:
@@ -42,9 +42,12 @@ def uploadImages(email, password, imageDir, projectId=None):
         for f in files:
             images.append(('images', (f, open(imageDir + '/' + f, 'rb'), 'image/jpg')))
     
+    if not options:
+        requestData = {'name': taskname}
+    else:
+        requestData = {'name': taskname, 'options': options}
 
-
-    res = requests.post('http://{}/api/projects/{}/tasks/'.format(serverIp,projectId), headers={'Authorization':'JWT {}'.format(token)}, files = images, data={'name': taskName})
+    res = requests.post('http://{}/api/projects/{}/tasks/'.format(serverIp,projectId), headers={'Authorization':'JWT {}'.format(token)}, files = images, data = requestData)
     return res.json().get('id')
 
 def createNewProject(email, password, projectName=None):

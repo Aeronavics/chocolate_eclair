@@ -13,7 +13,8 @@ def createTask():
     email = request.form['email']
     password = request.form['password']
     projectName = request.form.get('projectName')
-    task = TaskModel(email, password, projectName)
+    options = request.form.get('options')
+    task = TaskModel(email, password, projectName, options)
     taskDict[int(task.id)] = task
     saveTasks()
     return jsonify({'id': task.id})
