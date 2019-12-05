@@ -4,8 +4,15 @@ import os
 from werkzeug import secure_filename
 import shutil
 import pickle
+import httpWebODM
 
 app = Flask(__name__) 
+
+@app.route('/', methods=['POST'])
+def login():
+    email = request.form['email']
+    password = request.form['password']
+    return httpWebODM.loginWithEmail(email, password)
 
 
 @app.route('/task', methods=['POST'])

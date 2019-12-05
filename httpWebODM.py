@@ -15,6 +15,10 @@ def login(username, password):
     res = requests.post('http://' + serverIp +'/api/token-auth/', data={'username': username, 'password': password}).json()
     return res['token']
 
+def loginWithEmail(email, password):
+    username = db.getUsernameFromEmail(email)
+    return login(username, passord)
+
 def createTask(email, password, imageDir, projectName, taskName, options):
     if not projectName:
         return uploadImages(email, password, imagesDir, taskName, options)
