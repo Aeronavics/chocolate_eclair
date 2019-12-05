@@ -17,7 +17,7 @@ def login(username, password):
 
 def loginWithEmail(email, password):
     username = db.getUsernameFromEmail(email)
-    return login(username, passord)
+    return login(username, password)
 
 def createTask(email, password, imageDir, projectName, taskName, options):
     if not projectName:
