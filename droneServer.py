@@ -12,7 +12,7 @@ app = Flask(__name__)
 def login():
     email = request.form['email']
     password = request.form['password']
-    return httpWebODM.loginWithEmail(email, password)
+    return jsonify({'token': httpWebODM.loginWithEmail(email, password)})
 
 
 @app.route('/task', methods=['POST'])
