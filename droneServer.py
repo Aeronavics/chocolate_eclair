@@ -14,6 +14,10 @@ def login():
     password = request.form['password']
     return jsonify({'token': httpWebODM.loginWithEmail(email, password)})
 
+@app.route('/presets', methods=['GET'])
+def getPresets():
+    return jsonify(httpWebODM.getPresets())
+
 
 @app.route('/task', methods=['POST'])
 def createTask():
@@ -61,4 +65,4 @@ taskDict = loadTasks()
 
 if __name__ == "__main__":
     taskDict = loadTasks()
-    app.run(port=5000)
+    app.run(port=6000)

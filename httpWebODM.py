@@ -64,3 +64,11 @@ def createNewProject(email, password, projectName=None):
             headers={'Authorization':'JWT {}'.format(token)},
             data={'name':'{}'.format(projectName)}).json()
     return res['id']
+
+def getPresets():
+    token = login(adminUsername, adminPassword)
+    res = requests.get('http://{}/api/presets/'.format(serverIp),
+            headers={'Authorization':'JWT {}'.format(token)}).json()
+    return res
+
+print(getPresets())
