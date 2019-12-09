@@ -70,5 +70,3 @@ def getPresets():
     res = requests.get('http://{}/api/presets/'.format(serverIp),
             headers={'Authorization':'JWT {}'.format(token)}).json()
     return res
-
-print(getPresets())
