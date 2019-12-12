@@ -28,6 +28,7 @@ def createTask():
     taskName = request.form.get('taskName')
     task = TaskModel(email, password, projectName, taskName, options)
     taskDict[int(task.id)] = task
+    task.uploadTask()
     saveTasks()
     return jsonify({'id': task.id})
 
@@ -38,16 +39,17 @@ def uploadImages(task_id):
     for file in images:
         file.save(os.path.join(task.images, secure_filename(file.filename)))
     saveTasks()
-    return jsonify({'totalImages': len([name for name in os.listdir(task.images) if os.path.isfile(os.path.join(task.images, name))])})
+    task.uploadImages()
+    return jsonify({'imagesUploaded': True})
 
 @app.route('/task/<int:task_id>/start', methods=['POST'])
 def startTask(task_id):
     task = taskDict.get(task_id)
-    tid = task.uploadTask()
+    task.startTask()
     shutil.rmtree(task.images)
     taskDict.pop(task_id)
     saveTasks()
-    return jsonify({'WebODMTaskID': tid})
+    return jsonify({'taskStarted': True})
 
 def loadTasks():
     try:

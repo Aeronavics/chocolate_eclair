@@ -12,6 +12,8 @@ class TaskModel:
         self.images = "./uploads/{}/".format(self.id)
         self.projectName = projectName
         self.taskName = taskName
+        self.projectId = None;
+        self.taskId = None;
         self.options = options
         if not os.path.exists("./uploads/"):
             os.mkdir("./uploads/")
@@ -21,7 +23,16 @@ class TaskModel:
 
     def uploadTask(self):
         exifEditor.validate(self.images)
-        tid = httpWebODM.createTask(self.email, self.password, self.images, self.projectName, self.taskName, self.options)
-        return tid
+        self.taskId, self.projectId = httpWebODM.createTask(self.email, self.password, self.projectName, self.taskName, self.options)
 
 
+    def uploadImages(self):
+        exifEditor.validate(self.images)
+        for root, dirs, files in os.walk(self.images):
+            for f in files:
+                httpWebODM.uploadImages(self.email, self.password, self.images + '/' + f, self.taskId, self.projectId)
+                os.remove(self.images + '/' + f)
+
+
+    def startTask(self):
+        httpWebODM.startTask(self.email, self.password, self.taskId, self.projectId)
