@@ -20,7 +20,7 @@ def getLatestProjectFromEmail(email):
     cursor = connect()
     if (cursor):
         try:
-            cursor.execute("select t.id from (select distinct app_project.id, app_project.created_at, row_number() over(order by app_project.created_at desc) as rn from app_project join auth_user on app_project.owner_id=auth_user.id where auth_user.email='" + email + "')t where t.rn =1;")
+            cursor.execute("select t.id from (select distinct app_project.id, app_project.created_at, row_number() over(order by app_project.created_at desc) as rn from app_project join auth_user on app_project.owner_id=auth_user.id where auth_user.email='" + email + "' and app_project.deleting=false)t where t.rn =1;")
             record = cursor.fetchone()
             if (not record):
                 print("No projects found")
@@ -111,7 +111,7 @@ def getAllProjectsFromEmail(email):
     cursor = connect()
     if cursor:
         try:
-            cursor.execute("select distinct app_project.id from app_project join auth_user on app_project.owner_id=auth_user.id where auth_user.email='"+ email +"'")
+            cursor.execute("select distinct app_project.id from app_project join auth_user on app_project.owner_id=auth_user.id where auth_user.email='"+ email +"' and app_project.deleting=false")
             record = cursor.fetchall()
             if not record:
                 return []
@@ -128,7 +128,7 @@ def getLatestProjectIdFromProjectName(projectName, email):
     cursor = connect()
     if cursor:
         try:
-            cursor.execute("select t.id from (select app_project.id, app_project.created_at, row_number() over(order by app_project.created_at desc) from app_project join auth_user on app_project.owner_id=auth_user.id where app_project.name='" + projectName + "' and auth_user.email='" + email + "')t where t.row_number=1")
+            cursor.execute("select t.id from (select app_project.id, app_project.created_at, row_number() over(order by app_project.created_at desc) from app_project join auth_user on app_project.owner_id=auth_user.id where app_project.name='" + projectName + "' and auth_user.email='" + email + "' and app_project.deleting=false)t where t.row_number=1")
             record = cursor.fetchone()
             if not record:
                 return
