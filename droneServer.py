@@ -2,9 +2,10 @@ from flask import Flask, request, jsonify
 from taskModel import TaskModel
 import os
 from werkzeug import secure_filename
-import shutil
 import pickle
 import httpWebODM
+import threading 
+
 
 app = Flask(__name__) 
 
@@ -39,14 +40,23 @@ def uploadImages(task_id):
     for file in images:
         file.save(os.path.join(task.images, secure_filename(file.filename)))
     saveTasks()
-    task.uploadImages()
     return jsonify({'imagesUploaded': True})
+
+@app.route('/task/<int:task_id>/log', methods=['POST'])
+def uploadLog(task_id):
+    task = taskDict.get(task_id)
+    log = request.files.getlist('log')
+    for file in log:
+        file.save(os.path.join(task.log, secure_filename(file.filename)))
+    task.logName = secure_filename(file.filename)
+    saveTasks()
+    return jsonify({'logUploaded': True})
 
 @app.route('/task/<int:task_id>/start', methods=['POST'])
 def startTask(task_id):
     task = taskDict.get(task_id)
-    task.startTask()
-    shutil.rmtree(task.images)
+    thread = threading.Thread(target=task.startTask)
+    thread.start()
     taskDict.pop(task_id)
     saveTasks()
     return jsonify({'taskStarted': True})
