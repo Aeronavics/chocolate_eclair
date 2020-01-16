@@ -13,13 +13,13 @@ class TaskModel:
         self.id = id(self)
         self.email = email
         self.password = password
-        self.images = "/home/james/Documents/chocolate_eclair/uploads/{}".format(self.id)
+        self.images = "/home/chocolateEclair/uploads/{}".format(self.id)
         self.projectName = projectName
         self.taskName = taskName
         self.projectId = None;
         self.taskId = None;
         self.options = options
-        self.log = "/home/james/Documents/chocolate_eclair/logs/{}".format(self.id)
+        self.log = "/home/chocolateEclair/logs/{}".format(self.id)
         self.logName = ""
         if not os.path.exists("./uploads/"):
             os.mkdir("./uploads/")
@@ -42,15 +42,15 @@ class TaskModel:
 
         scp=SCPClient(ssh.get_transport())
 
-        scp.put("/home/james/Documents/chocolate_eclair/uploads/{}".format(self.id), recursive=True, remote_path="C:/Users/Public/")
-        scp.put("/home/james/Documents/chocolate_eclair/logs/{}/{}".format(self.id,self.logName), remote_path="C:/Users/Public/{}_log".format(self.id))
+        scp.put("/home/chocolateEclair/uploads/{}".format(self.id), recursive=True, remote_path="C:/Users/Public/")
+        scp.put("/home/chocolateEclair/logs/{}/{}".format(self.id,self.logName), remote_path="C:/Users/Public/{}_log".format(self.id))
 
         ssh_stdin, ssh_stdout, ssh_stderr = ssh.exec_command('"C:\\Program Files (x86)\\Septentrio\\GeoTagZ\\bin\\GeoTagZ.exe" -f C:\\Users\\Public\\{}_log -p C:\\Users\\Public\\{} -o C:\\Users\\Public\\{}_processed'.format(self.id,self.id,self.id))
 
         print(ssh_stderr.readlines())
         print(ssh_stdout.readlines())
 
-        scp.get("C:/Users/Public/{}_processed".format(self.id), recursive=True, local_path="/home/james/Documents/chocolate_eclair/uploads/")
+        scp.get("C:/Users/Public/{}_processed".format(self.id), recursive=True, local_path="/home/chocolateEclair/uploads/")
 
         scp.close()
 
