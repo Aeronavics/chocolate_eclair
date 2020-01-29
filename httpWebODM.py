@@ -56,6 +56,7 @@ def createNewProject(email, password, projectName=None):
 
 
 def uploadTask(email, password, taskName, options, projectId=None):
+    options = json.loads(options)
     if not projectId:
         projectId =  db.getLatestProjectFromEmail(email)
     else:
@@ -71,7 +72,7 @@ def uploadTask(email, password, taskName, options, projectId=None):
     if not options:
         requestData = {'name': taskName, 'partial': True}
     else:
-        requestData = {'name': taskName, 'partial': True, 'options': options}
+        requestData = {'name': taskName, 'partial': True, 'options': json.dumps(options)}
     res = requests.post('http://{}/api/projects/{}/tasks/'.format(serverIp,projectId), headers={'Authorization':'JWT {}'.format(token)}, data = requestData)
     return res.json().get('id'), res.json().get('project')
 
