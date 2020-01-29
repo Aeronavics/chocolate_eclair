@@ -17,23 +17,17 @@ def login(username, password):
 
 
 
-def loginWithEmail(email, password):
-    username = db.getUsernameFromEmail(email)
-    return login(username, password)
-
-
-
-def createTask(email, password, projectName, taskName, options):
+def createTask(username, password, projectName, taskName, options):
     if not projectName:
-        return uploadTask(email, password, taskName, options)
+        return uploadTask(username, password, taskName, options)
     else:
-        projectId = db.getLatestProjectIdFromProjectName(projectName, email)
+        projectId = db.getLatestProjectIdFromProjectName(projectName, username)
         if not projectId:
-            projectId = createNewProject(email, password, projectName)
-        return uploadTask(email, password, taskName, options, projectId)
+            projectId = createNewProject(username, password, projectName)
+        return uploadTask(username, password, taskName, options, projectId)
 
 
-def uploadImages(email, password, imagePath, taskId, projectId):
+def uploadImages(username, password, imagePath, taskId, projectId):
     token = login(adminUsername, adminPassword)
     images = []
     images.append(('images', (imagePath, open(imagePath, 'rb'), 'image/jpg')))
@@ -43,8 +37,8 @@ def uploadImages(email, password, imagePath, taskId, projectId):
 
 
 
-def createNewProject(email, password, projectName=None):
-    token = loginWithEmail(email, password)
+def createNewProject(username, password, projectName=None):
+    token = login(username, password)
     if not projectName:
         projectName ="Project created: " + datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
     res = requests.post('http://{}/api/projects/'.format(serverIp),
@@ -55,15 +49,15 @@ def createNewProject(email, password, projectName=None):
 
 
 
-def uploadTask(email, password, taskName, options, projectId=None):
+def uploadTask(username, password, taskName, options, projectId=None):
     if not projectId:
-        projectId =  db.getLatestProjectFromEmail(email)
+        projectId =  db.getLatestProjectFromUsername(username)
     else:
-        projectIdList = db.getAllProjectsFromEmail(email)
+        projectIdList = db.getAllProjectsFromUsername(username)
         if (projectId not in projectIdList):
-            projectId = db.getLatestProjectFromEmail(email)
+            projectId = db.getLatestProjectFromUsername(username)
     if not projectId:
-        projectId = createNewProject(email,password)
+        projectId = createNewProject(username,password)
 
     token = login(adminUsername, adminPassword)
     if not taskName:
@@ -78,7 +72,7 @@ def uploadTask(email, password, taskName, options, projectId=None):
 
 
 
-def startTask(email, password, taskId, projectId):
+def startTask(username, password, taskId, projectId):
     token = login(adminUsername, adminPassword)
     res = requests.post('http://{}/api/projects/{}/tasks/{}/commit/'.format(serverIp,projectId,taskId), headers={'Authorization':'JWT {}'.format(token)})
     return

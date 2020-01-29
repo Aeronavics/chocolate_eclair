@@ -11,9 +11,9 @@ app = Flask(__name__)
 
 @app.route('/', methods=['POST'])
 def login():
-    email = request.form['email']
+    username = request.form['username']
     password = request.form['password']
-    return jsonify({'token': httpWebODM.loginWithEmail(email, password)})
+    return jsonify({'token': httpWebODM.login(username, password)})
 
 @app.route('/presets', methods=['GET'])
 def getPresets():
@@ -22,12 +22,12 @@ def getPresets():
 
 @app.route('/task', methods=['POST'])
 def createTask():
-    email = request.form['email']
+    username = request.form['username']
     password = request.form['password']
     projectName = request.form.get('projectName')
     options = request.form.get('options')
     taskName = request.form.get('taskName')
-    task = TaskModel(email, password, projectName, taskName, options)
+    task = TaskModel(username, password, projectName, taskName, options)
     taskDict[int(task.id)] = task
     task.uploadTask()
     saveTasks()
@@ -77,4 +77,4 @@ taskDict = loadTasks()
 
 if __name__ == "__main__":
     taskDict = loadTasks()
-    app.run(port=6000)
+    app.run(port=6000,debug=True)

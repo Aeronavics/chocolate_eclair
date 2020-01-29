@@ -9,17 +9,17 @@ import shutil
 
 class TaskModel:
 
-    def __init__(self, email, password, projectName, taskName, options):
+    def __init__(self, username, password, projectName, taskName, options):
         self.id = id(self)
-        self.email = email
+        self.username = username
         self.password = password
-        self.images = "/home/chocolateEclair/uploads/{}".format(self.id)
+        self.images = "/home/chocolate_eclair/uploads/{}".format(self.id)
         self.projectName = projectName
         self.taskName = taskName
         self.projectId = None;
         self.taskId = None;
         self.options = options
-        self.log = "/home/chocolateEclair/logs/{}".format(self.id)
+        self.log = "/home/chocolate_eclair/logs/{}".format(self.id)
         self.logName = ""
         if not os.path.exists("./uploads/"):
             os.mkdir("./uploads/")
@@ -32,7 +32,7 @@ class TaskModel:
 
 
     def uploadTask(self):
-        self.taskId, self.projectId = httpWebODM.createTask(self.email, self.password, self.projectName, self.taskName, self.options)
+        self.taskId, self.projectId = httpWebODM.createTask(self.username, self.password, self.projectName, self.taskName, self.options)
 
 
     def startTask(self):
@@ -72,8 +72,8 @@ class TaskModel:
         exifEditor.validate(self.images+"_processed/")
         for root, dirs, files in os.walk(self.images+"_processed/"):
             for f in files:
-                httpWebODM.uploadImages(self.email, self.password, self.images + '_processed/' + f, self.taskId, self.projectId)
+                httpWebODM.uploadImages(self.username, self.password, self.images + '_processed/' + f, self.taskId, self.projectId)
         shutil.rmtree(self.images+"_processed")
         shutil.rmtree(self.images)
         shutil.rmtree(self.log)
-        httpWebODM.startTask(self.email, self.password, self.taskId, self.projectId)
+        httpWebODM.startTask(self.username, self.password, self.taskId, self.projectId)
