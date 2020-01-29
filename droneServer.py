@@ -31,7 +31,7 @@ def createTask():
     taskDict[int(task.id)] = task
     task.uploadTask()
     saveTasks()
-    return jsonify({'id': task.id})
+    return jsonify(task.id)
 
 @app.route('/task/<int:task_id>', methods=['POST'])
 def uploadImages(task_id):
